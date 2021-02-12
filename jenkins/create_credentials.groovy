@@ -12,8 +12,8 @@ import org.apache.commons.fileupload.*
 import org.apache.commons.fileupload.disk.*
 import java.nio.file.Files
 
-pubKeyFile = "/Users/cmoullia/code/ch007m/gpg-issue/jenkins/pubring.gpg"
-secretKeyFile = "/Users/cmoullia/code/ch007m/gpg-issue/jenkins/secring.gpg"
+pubKeyFile = "${pwd()}/jenkins/pubring.gpg"
+secretKeyFile = "${pwd()}/jenkins/secring.gpg"
 
 domain = Domain.global()
 store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
