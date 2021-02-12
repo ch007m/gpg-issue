@@ -52,7 +52,7 @@ like also the following link to design properly the jenkins job:
 - Sign the files
   ```bash
   export GPG_PASSPHRASE="xxxx"
-  mvn verify gpg:sign -Dgpg.keyname=<KEYNAME> -X
+  mvn verify gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
   ```
 - The `maven gpg plugin` will use the following parameters according to the configuration defined within the pom.xml and passed as ENV var and `gpg.property`
   ```bash
