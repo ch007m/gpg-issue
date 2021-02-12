@@ -1,5 +1,18 @@
 ## GPG Issue on a laptop
 
+### Table of Contents
+
+  * [Introduction](#introduction)
+  * [References](#references)
+  * [Use case: using user's GPG](#use-case-using-users-gpg)
+  * [Use case: Export keys and use another gnupg folder](#use-case-export-keys-and-use-another-gnupg-folder)
+    * [Export/Import keys](#exportimport-keys)
+    * [Sign the files using the exported keys &amp; mvn gpg:sign](#sign-the-files-using-the-exported-keys--mvn-gpgsign)
+    * [Sign a file using the exported keys (optional)](#sign-a-file-using-the-exported-keys-optional)
+  * [Trick](#trick)
+  
+### Introduction
+
 The description of the gpg issue is available [here](https://gist.github.com/cmoulliard/e5c56d34f690b719c66e95ec79a676ef#gistcomment-3628065) like also the gpg errors
 reported when we try to sign a file using exported public/private keys (e.g. `invalid packet (ctb=00), failed: Invalid keyring` ...).
 
