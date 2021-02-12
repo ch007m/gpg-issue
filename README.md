@@ -78,7 +78,7 @@ like also the following link to design properly the jenkins job:
   -rw-r--r--  1 cmoullia  staff  833 Feb 12 09:32 target/gpg-1.0.0-SNAPSHOT.pom.asc.asc
   ```
 
-### Export to a new .gnupg folder
+### Use case: Export keys and use another gnupg folder
 
 When we want to test the scenario to release a project (or sign the files) using a GPG Key with a Jenkins Job, then the process will certainly fail 
 due to wrong format used to export the keys or bad configuration of the `GNUPGHOME` env variable resulting in several `gpg-agent` launched and pointing to your 
