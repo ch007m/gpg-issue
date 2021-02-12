@@ -128,12 +128,6 @@ pipeline {
                     }
                 }
             }
-            post {
-                always {
-                    // Uninstall .gnupg directory
-                    sh 'gpgconf --kill gpg-agent || true ; rm -rf "$(dirname "${GNUPGHOME}")"'
-                }
-            }
         }
     }
 }
