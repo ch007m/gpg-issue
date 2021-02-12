@@ -5,7 +5,7 @@ reported when we try to sign a file using exported public/private keys (e.g. `in
 
 It occurs when we try to use on the same machine different `gpg` folders; your home folder, the one created within the workspace by jenkins, ...
 
-Such a situation could become conflictual if it not managed correctly as most several `gpg-agent` will be launched but pointing to different `.gnupg` folders
+Such a situation could become conflictual if it not managed correctly as several `gpg-agent` will be launched but pointing to different `.gnupg` folders !!!
 
 ### References
 
