@@ -170,7 +170,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   and copy/paste your pub/private keys within the cloned project
   
   ```bash
-  cat jenkins/create_credentials.groovy | jenkins-cli -s http://localhost:8080 groovy =
+  cat jenkins/create_credentials.groovy | jenkins-cli -s http://localhost:8080 groovy = <PATH_OF_THE_PROJECT>
   ```
 - Launch the Job :-)
 
