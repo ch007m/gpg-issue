@@ -18,7 +18,58 @@ while the following to design properly the jenkins project:
 
 ### Use case: using user's GPG 
 
-
+- Plugin configuration used
+  ```xml
+  <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-gpg-plugin</artifactId>
+      <executions>
+          <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                  <goal>sign</goal>
+              </goals>
+          </execution>
+      </executions>
+      <configuration>
+          <useAgent>true</useAgent>
+          <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+          <gpgArguments>
+              <arg>--batch</arg>
+              <arg>--passphrase-fd</arg>
+              <arg>0</arg>
+          </gpgArguments>
+      </configuration>
+  </plugin>
+  ```
+- Package the Spring Boot project
+  ```bash
+  mvn clean package
+  ```
+- Sign the files
+  ```bash
+  export GPG_PASSPHRASE="xxxx"
+  mvn verify gpg:sign -Dgpg.keyname=<KEYNAME> -X
+  ```
+- The `maven gpg plugin` will use the following parameters according to the configuration defined within the pom.xml and passed as ENV var and `gpg.property`
+  ```bash
+  [DEBUG]   (f) ascDirectory = /Users/cmoullia/code/ch007m/gpg-issue/target/gpg
+  [DEBUG]   (f) defaultKeyring = true
+  [DEBUG]   (f) gpgArguments = [--batch, --passphrase-fd, 0]
+  [DEBUG]   (f) interactive = true
+  [DEBUG]   (f) keyname = 4BD5F787F27F97744BC09E019C1CA69653E98E56
+  [DEBUG]   (f) passphrase = xxxxxxxxxx
+  [DEBUG]   (f) passphraseServerId = gpg.passphrase
+  [DEBUG]   (f) project = MavenProject: dev.snowdrop:gpg:1.0.0-SNAPSHOT @ /Users/cmoullia/code/ch007m/gpg-issue/pom.xml
+  [DEBUG]   (f) settings = org.apache.maven.execution.SettingsAdapter@616a06e3
+  [DEBUG]   (f) skip = false
+  [DEBUG]   (f) useAgent = true
+  ```
+- Verify under `target`, that files having extensions `*.asc` exist
+  ```bash
+  
+  ```
 
 ### Export to a new .gnupg folder
 
