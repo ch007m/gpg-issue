@@ -55,6 +55,8 @@ like also the following link to design properly the jenkins job:
               <arg>--batch</arg>
               <arg>--passphrase-fd</arg>
               <arg>0</arg>
+              <arg>--pinentry-mode</arg>
+              <arg>loopback</arg>
           </gpgArguments>
       </configuration>
   </plugin>
@@ -66,7 +68,8 @@ like also the following link to design properly the jenkins job:
 - Sign the files
   ```bash
   export GPG_PASSPHRASE="xxxx"
-  mvn package gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
+  export KEYNAME=<YOUR KEYID>
+  mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   ```
 - The `maven gpg plugin` will use the following parameters according to the configuration defined within the pom.xml and passed as ENV var and `gpg.property`
   ```bash
@@ -109,23 +112,25 @@ The instructions defined hereafter will help you to :
   pkill gpg-agent
   
   export KEYNAME=<YOUR KEYID>
+  export GPG_PASSPHRASE="xxxx"
   
   rm -rf tmp; mkdir tmp
   gpg -a --export > tmp/key.pub
-  gpg -a --export-secret-keys ${KEYNAME} > tmp/private.key
+  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -a --export-secret-keys ${KEYNAME} > tmp/private.key
   ```
 - Next, import the files into a newly gnupg folder created
 - **WARNING**: Set the env variable to the new folder to let the agent to deal correctly with the keys !!
   ```bash
+  pkill gpg-agent
   rm -rf .job_gnupg; mkdir -p .job_gnupg; chmod 700 .job_gnupg 
   export GNUPGHOME=.job_gnupg
   
   gpg --import tmp/key.pub
-  gpg --allow-secret-key-import --import tmp/private.key
+  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --allow-secret-key-import --import tmp/private.key
   ```
 - Next edit your key to trust it
   ```bash
-  gpg --edit-key <YOUR KEYID>
+  gpg --edit-key ${KEYNAME}
   trust
   5
   y 
@@ -138,7 +143,7 @@ export GPG_PASSPHRASE="xxxx"
 pkill gpg-agent
 export GNUPGHOME=.job_gnupg
 
-mvn package gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
+mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 ```
 
 #### Sign a file using the exported keys (optional)
@@ -147,14 +152,12 @@ mvn package gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
   ```bash
   pkill gpg-agent
   export GNUPGHOME=.job_gnupg
-  gpgconf --kill gpg-agent
-  gpgconf --launch gpg-agent
   ```
 - Sign a file locally
   ```bash
   export GNUPGHOME=.job_gnupg
   rm target/pom.xml.asc
-  echo ${PASSPHRASE} | gpg --use-agent --batch --passphrase-fd 0 --local-user <YOUR KEYID> --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
+  echo ${GPG_PASSPHRASE} | gpg --use-agent --batch --passphrase-fd 0 --pinentry-mode loopback --local-user ${KEYNAME} --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
 
   or to be prompted
   

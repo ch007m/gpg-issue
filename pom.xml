@@ -65,6 +65,8 @@
                         <arg>--batch</arg>
                         <arg>--passphrase-fd</arg>
                         <arg>0</arg>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
                     </gpgArguments>
                 </configuration>
             </plugin>
