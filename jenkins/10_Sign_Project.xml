@@ -1,0 +1,210 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.40">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.8.3"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.8.3">
+      <jobProperties>
+        <string>org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty</string>
+        <string>jenkins.model.BuildDiscarderProperty</string>
+      </jobProperties>
+      <triggers/>
+      <parameters>
+        <string>GPG_KEY</string>
+        <string>GITHUB_CREDENTIALS</string>
+        <string>GPG_KEY_PPHRASE</string>
+        <string>GPG_KEY_SEC_FILE</string>
+        <string>GPG_KEY_PUB_FILE</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>-1</numToKeep>
+        <artifactDaysToKeep>365</artifactDaysToKeep>
+        <artifactNumToKeep>60</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
+          <name>GITHUB_CREDENTIALS</name>
+          <description>GitHub credentials to checkout the project and push it&apos;s tags to GitHub.</description>
+          <defaultValue>GITHUB_CREDENTIALS</defaultValue>
+          <credentialType>com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl</credentialType>
+          <required>true</required>
+        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GPG_KEY</name>
+          <description>GPG key to sign the release files with.</description>
+          <defaultValue>4BD5F787F27F97744BC09E019C1CA69653E98E56</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
+          <name>GPG_KEY_SEC_FILE</name>
+          <description>File with the secret GPG key to sign the release files with.</description>
+          <defaultValue>GPG_KEY_SEC_FILE</defaultValue>
+          <credentialType>org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl</credentialType>
+          <required>true</required>
+        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
+        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
+          <name>GPG_KEY_PUB_FILE</name>
+          <description>File with the public GPG key to sign the release files with.</description>
+          <defaultValue>GPG_KEY_PUB_FILE</defaultValue>
+          <credentialType>org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl</credentialType>
+          <required>true</required>
+        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
+        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
+          <name>GPG_KEY_PPHRASE</name>
+          <description>Passphrase for the secret GPG key to sign the release files with.</description>
+          <defaultValue>GPG_KEY_PASSPHRASE</defaultValue>
+          <credentialType>com.cloudbees.plugins.credentials.common.StandardCredentials</credentialType>
+          <required>true</required>
+        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.87">
+    <script>@Library(&apos;snowdrop-lib&apos;)_
+
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(artifactDaysToKeepStr: &apos;365&apos;, artifactNumToKeepStr: &apos;60&apos;))
+        disableConcurrentBuilds()
+    }
+    parameters {
+        credentials(
+                credentialType: &apos;com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl&apos;,
+                defaultValue: &apos;GITHUB_CREDENTIALS&apos;,
+                description: &apos;GitHub credentials to checkout the project and push it\&apos;s tags to GitHub.&apos;,
+                name: &apos;GITHUB_CREDENTIALS&apos;,
+                required: true
+        )
+        string(
+                defaultValue: &apos;4BD5F787F27F97744BC09E019C1CA69653E98E56&apos;,
+                description: &apos;GPG key to sign the release files with.&apos;,
+                name: &apos;GPG_KEY&apos;
+        )
+        credentials(
+                credentialType: &apos;com.cloudbees.plugins.credentials.impl.FileCredentialsImpl&apos;,
+                defaultValue: &apos;secring.gpg&apos;,
+                description: &apos;File with the secret GPG key to sign the release files with.&apos;,
+                name: &apos;GPG_KEY_SEC_FILE&apos;,
+                required: true
+        )
+        credentials(
+                credentialType: &apos;com.cloudbees.plugins.credentials.impl.FileCredentialsImpl&apos;,
+                defaultValue: &apos;pubring.gpg&apos;,
+                description: &apos;File with the public GPG key to sign the release files with.&apos;,
+                name: &apos;GPG_KEY_PUB_FILE&apos;,
+                required: true
+        )
+        credentials(
+                credentialType: &apos;com.cloudbees.plugins.credentials.impl.StringCredentialsImpl&apos;,
+                defaultValue: &apos;GPG_KEY_PASSPHRASE&apos;,
+                description: &apos;Passphrase for the secret GPG key to sign the release files with.&apos;,
+                name: &apos;GPG_KEY_PPHRASE&apos;,
+                required: true
+        )
+    }
+    stages {
+        stage(&apos;SCM Checkout project&apos;) {
+            steps {
+                script {
+                    sh &apos;git config --global http.sslVerify false&apos;
+                }
+
+                script {
+                    sh &apos;rm -Rf gpg-issue&apos;
+                }
+
+                dir(&apos;gpg-issue&apos;) {
+                    deleteDir()
+
+                    checkout scm: [
+                            $class    : &apos;GitSCM&apos;,
+                            branches  : [[name: &quot;main&quot;]],
+                            extensions: [
+                                    [$class: &apos;CleanCheckout&apos;]
+                                    , [$class: &apos;WipeWorkspace&apos;]
+                                    , [$class: &apos;CleanBeforeCheckout&apos;]
+                                    , [$class: &apos;LocalBranch&apos;, localBranch: &quot;main&quot;]
+                                    , [$class: &apos;RelativeTargetDirectory&apos;
+                                    ]
+                                    , [$class: &apos;CloneOption&apos;, noTags: false, reference: &apos;&apos;, shallow: false]
+                                    , [$class: &apos;CheckoutOption&apos;]
+                            ]
+                            , submoduleCfg: []
+                            , userRemoteConfigs: [[credentialsId: &quot;${GITHUB_CREDENTIALS}&quot;,url: &quot;git@github.com:ch007m/gpg-issue.git&quot;]]
+                    ]
+                }
+            }
+        }
+        stage (&apos;Extract information&apos;) {
+            environment {
+                GNUPGHOME = &quot;${WORKSPACE}/.gnupg&quot;
+            }
+            steps {
+                withCredentials([file(credentialsId: &apos;${GPG_KEY_SEC_FILE}&apos;,variable: &apos;GPG_KEY_SEC_FILE_CONTENTS&apos;)
+                                 , file(credentialsId: &apos;${GPG_KEY_PUB_FILE}&apos;,variable: &apos;GPG_KEY_PUB_FILE_CONTENTS&apos;)
+                                 , string(credentialsId: &apos;${GPG_KEY_PPHRASE}&apos;,variable: &apos;GPG_KEY_PPHRASE_CONTENTS&apos;)
+                ]) {
+                    script {
+                        println(&quot;GPG_KEY_SEC_FILE: ${GPG_KEY_SEC_FILE}&quot;)
+                        println(&quot;GPG_KEY: ${GPG_KEY}&quot;)
+                        println(&quot;GPG_KEY_PPHRASE: ${GPG_KEY_PPHRASE}&quot;)
+                        println(&quot;GPG_KEY_SEC_FILE_CONTENTS: ${GPG_KEY_SEC_FILE_CONTENTS}&quot;)
+
+                        sh &apos;&apos;&apos;
+                        mkdir -p ${GNUPGHOME}
+                        cp -f ${GPG_KEY_SEC_FILE_CONTENTS} ${GNUPGHOME}/secring.gpg
+                        cp -f ${GPG_KEY_PUB_FILE_CONTENTS} ${GNUPGHOME}/pubring.gpg
+                        chmod 700 ${GNUPGHOME}
+                        &apos;&apos;&apos;
+                    }
+                }
+            }
+        }
+        stage (&apos;Check dependency tree&apos;) {
+            steps {
+                echo &apos;mvn dependency:tree&apos;
+                dir(&apos;gpg-issue&apos;) {
+                    sh &quot;mvn dependency:tree&quot;
+                }
+            }
+        }
+        stage (&apos;Execute release&apos;) {
+            environment {
+                // We need to put the .gnupg homedir somewhere, the workspace is too long a path name
+                // for the sockets, so we instead use a subdirectory of the user home (typically /home/jenkins).
+                // By using the executor number as part of that name, we ensure nobody else will concurrently
+                // use this directory
+                GNUPGHOME = &quot;${WORKSPACE}/.gnupg/&quot;
+            }
+            steps {
+                echo &apos;Sign project...&apos;
+                withCredentials([
+                        string(credentialsId: &apos;${GPG_KEY_PPHRASE}&apos;,variable: &apos;GPG_KEY_PPHRASE_CONTENTS&apos;)
+                ]) {
+                    dir(&apos;gpg-issue&apos;) {
+                        sh &apos;&apos;&apos;
+                        export GPG_PASSPHRASE=$GPG_KEY_PPHRASE_CONTENTS
+                        mvn package gpg:sign -Dgpg.args=&quot;--pinentry-mode loopback&quot; -Dgpg.keyname=$GPG_KEY -X
+                        &apos;&apos;&apos;
+                    }
+                }
+            }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

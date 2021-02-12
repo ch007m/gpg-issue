@@ -1,5 +1,6 @@
 tmp/
 .job_gnupg/
+*.gpg
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -33,3 +34,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/jenkins/my_credentials.groovy

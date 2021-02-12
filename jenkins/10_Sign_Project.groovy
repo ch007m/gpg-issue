@@ -91,8 +91,8 @@ pipeline {
 
                         sh '''
                         mkdir -p ${GNUPGHOME}
-                        cp ${GPG_KEY_SEC_FILE_CONTENTS} ${GNUPGHOME}/secring.gpg
-                        cp ${GPG_KEY_PUB_FILE_CONTENTS} ${GNUPGHOME}/pubring.gpg
+                        cp -f ${GPG_KEY_SEC_FILE_CONTENTS} ${GNUPGHOME}/secring.gpg
+                        cp -f ${GPG_KEY_PUB_FILE_CONTENTS} ${GNUPGHOME}/pubring.gpg
                         chmod 700 ${GNUPGHOME}
                         '''
                     }

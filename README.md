@@ -147,13 +147,27 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 #### Sign this project using jenkins job
 
 - Start a local jenkins instance (see instructions of the project jenkins_job_dsl)
-- Create a new pipeline using this groovy [pipeline DSL](pipeline/10_Sign_Project.groovy) file
+  ```bash
+  export JENKINS_DIR=~/code/snowdrop/infra-jobs-productization/jenkins-jobs-dsl
+  java -Djenkins.install.runSetupWizard=false -jar $JENKINS_DIR/tmp/jenkins.war
+  ```
+- Create a new pipeline using this groovy [pipeline DSL](jenkins/10_Sign_Project.groovy) file or import it
+  ```bash
+  jenkins-cli -s http://localhost:8080 create-job 10_Sign_Project < jenkins/10_Sign_Project.xml
+  ```
+
 - Create the following credentials using this url `http://localhost:8080/credentials/store/system/domain/_/`
   - `GITHUB_CREDENTIALS`: Username & password
   - `GPG_KEY`: String text of your GPG Key
   - `GPG_KEY_SEC_FILE`: Secret file containing the private keys
   - `GPG_KEY_PUB_FILE`: Secret file containing the public keys
   - `GPG_KEY_PASSPHRASE`: String text of your `PASSPHRASE`
+  
+  or execute the following script where you will, of course, replace within the file: the passphrase, keyid, GITHUB_CREDENTIALS ... !!!
+  
+  ```bash
+  cat jenkins/create_credentials.groovy | jenkins-cli -s http://localhost:8080 groovy =
+  ```
 - Launch the Job :-)
 
 #### Sign a file using the exported keys (optional)
@@ -193,7 +207,42 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   -----END PGP SIGNATURE-----
   ```
 
-### Trick
+### Tricks
+
+- List jobs, credentials
+  ```bash
+  jenkins-cli -s http://localhost:8080 list-jobs
+  jenkins-cli -s http://localhost:8080 list-credentials "system::system::jenkins"
+  ============================================
+  Domain             (global)
+  Description
+  # of Credentials   4
+  ============================================
+  Id                 Name
+  ================== =========================
+  GITHUB_CREDENTIALS GITHUB_CREDENTIALS/******
+  GPG_KEY_PASSPHRASE GPG_KEY_PASSPHRASE
+  GPG_KEY_SEC_FILE   secring.gpg
+  GPG_KEY_PUB_FILE   pubring.gpg
+  ============================================
+  ```
+- Export Jenkins job, credentials
+  ```bash
+  jenkins-cli -s http://localhost:8080 list-credentials "system::system::jenkins" > jenkins/jenkins_credentials.xml
+  jenkins-cli -s http://localhost:8080 get-job 10_Sign_Project > jenkins/10_Sign_Project.xml
+  ```
+- Delete credentials
+  ```bash
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_SEC_FILE &
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_PUB_FILE &
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY &         
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GITHUB_CREDENTIALS &
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_PASSPHRASE &
+  ```
+- Delete job
+  ```bash
+  jenkins-cli -s http://localhost:8080 delete-job 10_Sign_Project
+  ```
 
 - To watch the agent running
   ```bash
