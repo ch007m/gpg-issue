@@ -161,7 +161,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 
   or to be prompted
   
-  gpg --local-user <YOUR KEYID> --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
+  gpg --local-user ${KEYNAME} --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
   ```
 - Check if the file has been signed
   ```bash
