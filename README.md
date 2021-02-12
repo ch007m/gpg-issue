@@ -13,7 +13,7 @@ The following references will help you to correctly export/import your private/p
 
 - [Export/import properly  your gpg keys](https://www.debuntu.org/how-to-importexport-gpg-key-pair/)
 
-while the following to design properly the jenkins project:
+like also the following link to design properly the jenkins job:
 
 - [Jenkins CI/CD using GPG](https://www.cloudbees.com/blog/continuous-deployment-maven-central-apache-maven)
 - [Jenkins job to import zipped gnupg folder](https://github.com/stephenc/git-timestamp-maven-plugin/blob/1973be25c750b6ba98b6fb8200cecd7920b05b80/Jenkinsfile#L22-L54)
