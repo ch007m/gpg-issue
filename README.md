@@ -20,7 +20,7 @@ like also the following link to design properly the jenkins job:
 
 ### Use case: using user's GPG 
 
-- Plugin configuration used
+- The `maven gpg plugin` has been configured as defined hereafter to use the `passphrase` passed as ENV var and `--batch --passphrase fd 0` args to avoid to get a UI prompt
   ```xml
   <plugin>
       <groupId>org.apache.maven.plugins</groupId>
