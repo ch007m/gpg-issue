@@ -151,13 +151,13 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   export JENKINS_DIR=~/code/snowdrop/infra-jobs-productization/jenkins-jobs-dsl
   java -Djenkins.install.runSetupWizard=false -jar $JENKINS_DIR/tmp/jenkins.war
   ```
-- Create a new pipeline using this groovy [pipeline DSL](jenkins/10_Sign_Project.groovy) file or import it
+- Create a new pipeline using the UI and this groovy [pipeline DSL](jenkins/10_Sign_Project.groovy) file or import it wih the help of the jenkins-cli
   ```bash
   jenkins-cli -s http://localhost:8080 create-job 10_Sign_Project < jenkins/10_Sign_Project.xml
   ```
 
-- Create the following credentials using this url `http://localhost:8080/credentials/store/system/domain/_/`
-  - `GITHUB_CREDENTIALS`: Username & password
+- Create the following credentials (`http://localhost:8080/credentials/store/system/domain/_/`)
+  - `GITHUB_CREDENTIALS`: Username & password github token
   - `GPG_KEY`: String text of your GPG Key
   - `GPG_KEY_SEC_FILE`: Secret file containing the private keys
   - `GPG_KEY_PUB_FILE`: Secret file containing the public keys
@@ -167,7 +167,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   - passphrase,
   - gpg_keyid, 
   - github credentials
-  and copy/paste your pub/private keys within the cloned project
+  and copy/paste your pub/private keys within the cloned project under the `jenkins` folder
   
   ```bash
   cat jenkins/create_credentials.groovy | jenkins-cli -s http://localhost:8080 groovy = <PATH_OF_THE_PROJECT>
