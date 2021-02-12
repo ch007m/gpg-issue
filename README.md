@@ -37,6 +37,7 @@ like also the following link to design properly the jenkins job:
       <configuration>
           <useAgent>true</useAgent>
           <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+          <homeDir>${env.GPG_HOMEDIR}</homeDir>
           <gpgArguments>
               <arg>--batch</arg>
               <arg>--passphrase-fd</arg>
@@ -52,7 +53,7 @@ like also the following link to design properly the jenkins job:
 - Sign the files
   ```bash
   export GPG_PASSPHRASE="xxxx"
-  mvn verify gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
+  mvn package gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
   ```
 - The `maven gpg plugin` will use the following parameters according to the configuration defined within the pom.xml and passed as ENV var and `gpg.property`
   ```bash
@@ -87,38 +88,92 @@ The instructions defined hereafter will help you to :
 - Export/import correctly the keys and
 - Set up the `maven GPG plugin` to point to the correct new `GnuPG folder`
 
-### Commands
+#### Export/Import keys
+
+- First, export the public keys and your private key
+  ```bash
+  unset GNUPGHOME
+  pkill gpg-agent
+  
+  export KEYNAME=<YOUR KEYID>
+  
+  rm -rf tmp; mkdir tmp
+  gpg -a --export > tmp/key.pub
+  gpg -a --export-secret-keys ${KEYNAME} > tmp/private.key
+  ```
+- Next, import the files into a newly gnupg folder created
+- **WARNING**: Set the env variable to the new folder to let the agent to deal correctly with the keys !!
+  ```bash
+  rm -rf .job_gnupg; mkdir -p .job_gnupg; chmod 700 .job_gnupg 
+  export GNUPGHOME=.job_gnupg
+  
+  gpg --import tmp/key.pub
+  gpg --allow-secret-key-import --import tmp/private.key
+  ```
+- Next edit your key to trust it
+  ```bash
+  gpg --edit-key <YOUR KEYID>
+  trust
+  5
+  y 
+  quit
+  ```
+#### Sign the files using the exported keys & mvn gpg:sign
 
 ```bash
-unset GNUPGHOME
-rm -rf .new_gnupg; mkdir -p .new_gnupg; chmod 700 .new_gnupg/
-gpg -a --export > .new_gnupg/key.pub
-gpg -a --export-secret-keys -a 4BD5F787F27F97744BC09E019C1CA69653E98E56 > .new_gnupg//private.key
+export GPG_PASSPHRASE="xxxx"
+pkill gpg-agent
+export GNUPGHOME=.job_gnupg
 
-GNUPGHOME=.new_gnupg/ gpg --import .new_gnupg//key.pub
-GNUPGHOME=.new_gnupg/ gpg --allow-secret-key-import --import .new_gnupg//private.key
-
-GNUPGHOME=.new_gnupg/ gpg --list-secret-keys --keyid-format LONG
-GNUPGHOME=.new_gnupg/ gpg --edit-key 4BD5F787F27F97744BC09E019C1CA69653E98E56
-
-cat > .new_gnupg/gpg-agent.conf << EOF
-allow-loopback-pinentry
-EOF
-
-cat > .new_gnupg/gpg.conf << EOF
-use-agent
-pinentry-mode loopback
-EOF
-
-export GNUPGHOME=.new_gnupg
-gpgconf --kill gpg-agent
-gpgconf --launch gpg-agent
-
-rm dummy.txt.asc
-echo "secret-passphrase" | gpg --use-agent --batch --passphrase-fd 0 --local-user 4BD5F787F27F97744BC09E019C1CA69653E98E56 --armor --detach-sign --no-default-keyring --output dummy.txt.asc dummy.txt
+mvn package gpg:sign -Dgpg.keyname=<YOUR KEYID> -X
 ```
+
+#### Sign a file using the exported keys (optional)
+
+- Kill and restart the gpg-agent to point to the new folder
+  ```bash
+  pkill gpg-agent
+  export GNUPGHOME=.job_gnupg
+  gpgconf --kill gpg-agent
+  gpgconf --launch gpg-agent
+  ```
+- Sign a file locally
+  ```bash
+  export GNUPGHOME=.job_gnupg
+  rm target/pom.xml.asc
+  echo ${PASSPHRASE} | gpg --use-agent --batch --passphrase-fd 0 --local-user <YOUR KEYID> --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
+
+  or to be prompted
+  
+  gpg --local-user <YOUR KEYID> --armor --detach-sign --no-default-keyring --output target/pom.xml.asc pom.xml
+  ```
+- Check if the file has been signed
+  ```bash
+  cat target/pom.xml.asc
+  -----BEGIN PGP SIGNATURE-----
+  iQIyBAABCAAdFiEES9X3h/J/l3RLwJ4BnBymllPpjlYFAmAmSKQACgkQnBymllPp
+  jlZkVw/3c8IXrFIhoq4NWea+9qS5VWmFY7X9BLSMizHIWmFs5bdFOE1vsTOa1/E3
+  eATmFyuZGM9zJ8Nl14ifnvGx5NNx+J+8+GsPsQgoTOU7dmQU7L0EyLG7mv88XmS3
+  C0PYOrPoYd4UzMaAeAlKlWHpF2qhHNwCGt4lEakLiPvR7eu6K7eRKQHHmkcQOONy
+  WLykfqXeNiDDn1JzZWYvJfxEpdKsrmIjDz6S4khZgdz/8dHEssla95fxi8ORwjPW
+  RSBI/lFo3PuZjU4+0NUOEJv3sdl9VSCzgKAb1PFNKD2S/qmODNgF/5ek6c+5x9Cw
+  cKcJAwfHhE9L8rqsQafmz5fdpTOzpXV+EOUppNnrmF5qfdYeb/mhGbpkKmdLvwI3
+  AVta3nhD0qMATvr96I2Pd+QP0uQt9f6Ja3juWFfskncjtKlL+/pc81PUOYO8Kh+D
+  mmBMMXtEDKhDjrgZSgGFUvzQE2HNbEB54YAFYjSF11RHtLytrmctdokapuxc8zIq
+  I5mTrtRRXw+Z8j1WI1yzTr/uwoayMcVqSLMApuSuB5efwj82wwb+U/BaQmd3sxs4
+  Wh0TOiGdNBOSlyX1PyiVKn3qmm5sbxGXrB0CYVouIJoemOF3pwTYDetTI19ZBf7c
+  c//NIyPKhBkWdAZI9KSSsabCV9VMig8cvLBPAYS/EoZjsKVqbw==
+  =eliS
+  -----END PGP SIGNATURE-----
+  ```
+
+### Trick
 
 - To watch the agent running
   ```bash
   watch "ps -ef | grep gpg-agent"
+  ```
+- To list the keys
+  ```bash
+  gpg --list-secret-keys --keyid-format LONG
   ```
