@@ -8,6 +8,7 @@
   * [Use case: Export keys and use another gnupg folder](#use-case-export-keys-and-use-another-gnupg-folder)
     * [Export/Import keys](#exportimport-keys)
     * [Sign the files using the exported keys &amp; mvn gpg:sign](#sign-the-files-using-the-exported-keys--mvn-gpgsign)
+    * [Sign this project using jenkins job](#sign-this-project-using-jenkins-job)
     * [Sign a file using the exported keys (optional)](#sign-a-file-using-the-exported-keys-optional)
   * [Trick](#trick)
   
