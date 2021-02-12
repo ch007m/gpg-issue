@@ -1,6 +1,7 @@
 ## GPG Issue on a laptop
 
-The description of the gpg issue is available [here](https://gist.github.com/cmoulliard/e5c56d34f690b719c66e95ec79a676ef#gistcomment-3628065).
+The description of the gpg issue is available [here](https://gist.github.com/cmoulliard/e5c56d34f690b719c66e95ec79a676ef#gistcomment-3628065) like also the gpg errors
+reported such as `invalid packet (ctb=00), failed: Invalid keyring` ...
 
 It occurs when we try to use on the same machine different `gpg` folders; your home folder, the one created within the workspace by jenkins, ...
 
