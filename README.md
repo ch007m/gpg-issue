@@ -52,9 +52,6 @@ like also the following link to design properly the jenkins job:
           <passphrase>${env.GPG_PASSPHRASE}</passphrase>
           <homeDir>${env.GPG_HOMEDIR}</homeDir>
           <gpgArguments>
-              <arg>--batch</arg>
-              <arg>--passphrase-fd</arg>
-              <arg>0</arg>
               <arg>--pinentry-mode</arg>
               <arg>loopback</arg>
           </gpgArguments>
