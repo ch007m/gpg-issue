@@ -80,7 +80,7 @@ like also the following link to design properly the jenkins job:
 ### Export to a new .gnupg folder
 
 When we want to test the scenario to release a project (or sign the files) using a GPG Key with a Jenkins Job, then the process will certainly fail 
-due to wrong format used o export the keys or bad configuration of the `GNUPGHOME` env variable resulting in several gpg-agent launched and pointing to your 
+due to wrong format used to export the keys or bad configuration of the `GNUPGHOME` env variable resulting in several `gpg-agent` launched and pointing to your 
 HOME gpg folder, and the one created by then jenkins job under the workspace.
 
 The instructions defined hereafter will help you to :
