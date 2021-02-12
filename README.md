@@ -8,13 +8,12 @@ Such a situation could become conflictual if it not managed correctly as most se
 
 The following references will help you to correctly export/import your private/public keys
 
-- https://www.debuntu.org/how-to-importexport-gpg-key-pair/
-- https://d-k-ivanov.github.io/docs/#Security/GPG/Common_Usage/
+- [Export/import properly  your gpg keys](https://www.debuntu.org/how-to-importexport-gpg-key-pair/)
 
 while the following to design properly the jenkins project:
 
-- https://github.com/stephenc/git-timestamp-maven-plugin/blob/1973be25c750b6ba98b6fb8200cecd7920b05b80/Jenkinsfile#L22-L54
-- https://www.cloudbees.com/blog/continuous-deployment-maven-central-apache-maven
+- [Jenkins CI/CD using GPG](https://www.cloudbees.com/blog/continuous-deployment-maven-central-apache-maven)
+- [Jenkins job to import zipped gnupg folder](https://github.com/stephenc/git-timestamp-maven-plugin/blob/1973be25c750b6ba98b6fb8200cecd7920b05b80/Jenkinsfile#L22-L54)
 
 ### Use case: using user's GPG 
 
