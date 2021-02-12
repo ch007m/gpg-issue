@@ -146,7 +146,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 
 #### Sign this project using jenkins job
 
-- Start a local jenkins instance (see instructions of the project jenkins_job_dsl)
+- Start a local jenkins instance. See the instructions of the project [jenkins_job_dsl](https://gitlab.cee.redhat.com/snowdrop/jenkins-jobs-dsl).
   ```bash
   export JENKINS_DIR=~/code/snowdrop/infra-jobs-productization/jenkins-jobs-dsl
   java -Djenkins.install.runSetupWizard=false -jar $JENKINS_DIR/tmp/jenkins.war
