@@ -143,6 +143,18 @@ export GNUPGHOME=.job_gnupg
 mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 ```
 
+#### Sign this project using jenkins job
+
+- Start a local jenkins instance (see instrcutions of the project jenkins_job_dsl)
+- Create a new pipeline using the groovy [pipeline DSL](pipeline/10_Sign_Project.groovy)
+- Create the following credentials:
+  - GITHUB_CREDENTIALS: Username & password
+  - GPG_KEY: String text
+  - GPG_KEY_SEC_FILE: Secret file containing the private keys
+  - GPG_KEY_PUB_FILE: Secret file containing the public keys
+  - GPG_KEY_PASSPHRASE: String text of your PASSPHRASE
+- Launch the Job :-)
+
 #### Sign a file using the exported keys (optional)
 
 - Kill and restart the gpg-agent to point to the new folder
