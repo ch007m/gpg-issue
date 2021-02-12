@@ -70,10 +70,22 @@ like also the following link to design properly the jenkins job:
   ```
 - Verify under `target`, that files having extensions `*.asc` exist
   ```bash
-  
+  ls -la target/*.asc
+  -rw-r--r--  1 cmoullia  staff  833 Feb 12 09:32 target/gpg-1.0.0-SNAPSHOT.jar.asc
+  -rw-r--r--  1 cmoullia  staff  833 Feb 12 09:32 target/gpg-1.0.0-SNAPSHOT.jar.asc.asc
+  -rw-r--r--  1 cmoullia  staff  833 Feb 12 09:32 target/gpg-1.0.0-SNAPSHOT.pom.asc
+  -rw-r--r--  1 cmoullia  staff  833 Feb 12 09:32 target/gpg-1.0.0-SNAPSHOT.pom.asc.asc
   ```
 
 ### Export to a new .gnupg folder
+
+When we want to test the scenario to release a project (or sign the files) using a GPG Key with a Jenkins Job, then the process will certainly fail 
+due to wrong format used o export the keys or bad configuration of the `GNUPGHOME` env variable resulting in several gpg-agent launched and pointing to your 
+HOME gpg folder, and the one created by then jenkins job under the workspace.
+
+The instructions defined hereafter will help you to :
+- Export/import correctly the keys and
+- Set up the `maven GPG plugin` to point to the correct new `GnuPG folder`
 
 ### Commands
 
