@@ -113,8 +113,8 @@ The instructions defined hereafter will help you to :
   export GPG_PASSPHRASE="xxxx"
   
   rm -rf tmp; mkdir tmp
-  gpg -a --export > tmp/key.pub
-  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -a --export-secret-keys ${KEYNAME} > tmp/private.key
+  gpg -a --export > tmp/pubring.gpg
+  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -a --export-secret-keys ${KEYNAME} > tmp/secring.gpg
   ```
 - Next, import the files into a newly gnupg folder created
 - **WARNING**: Set the env variable to the new folder to let the agent to deal correctly with the keys !!
@@ -123,8 +123,8 @@ The instructions defined hereafter will help you to :
   rm -rf .job_gnupg; mkdir -p .job_gnupg; chmod 700 .job_gnupg 
   export GNUPGHOME=.job_gnupg
   
-  gpg --import tmp/key.pub
-  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --allow-secret-key-import --import tmp/private.key
+  gpg --import tmp/pubring.gpg
+  echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --allow-secret-key-import --import tmp/secring.gpg
   ```
 - Next edit your key to trust it
   ```bash
@@ -227,7 +227,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   GITHUB_CREDENTIALS GITHUB_CREDENTIALS/******
   GPG_KEY_PASSPHRASE GPG_KEY_PASSPHRASE
   GPG_KEY_SEC_FILE   secring.gpg
-  GPG_KEY_PUB_FILE   pubring.gpg
+  GPG_KEY_PUB_FILE   .pub
   ============================================
   ```
 - Export Jenkins job, credentials
