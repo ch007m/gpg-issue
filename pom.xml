@@ -75,7 +75,6 @@
                         <arg>--batch</arg>
                         <arg>--passphrase-fd</arg>
                         <arg>0</arg>
-                        <arg>--use-agent</arg>
                     </gpgArguments>
                 </configuration>
             </plugin>
