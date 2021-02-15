@@ -160,7 +160,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   jenkins-cli -s http://localhost:8080 create-job 10_Sign_Project < jenkins/10_Sign_Project.xml
   ```
 
-- Create the following credentials (`http://localhost:8080/credentials/store/system/domain/_/`)
+- Create the following credentials using the UI - `http://localhost:8080/credentials/store/system/domain/_/`
   - `GITHUB_CREDENTIALS`: Username & password github token
   - `GPG_KEY`: String text of your GPG Key
   - `GPG_ZIPPED_KEYS_FILE`: Secret file containing the zipped keys file
