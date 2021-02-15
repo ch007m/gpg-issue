@@ -163,15 +163,14 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
 - Create the following credentials (`http://localhost:8080/credentials/store/system/domain/_/`)
   - `GITHUB_CREDENTIALS`: Username & password github token
   - `GPG_KEY`: String text of your GPG Key
-  - `GPG_KEY_SEC_FILE`: Secret file containing the private keys
-  - `GPG_KEY_PUB_FILE`: Secret file containing the public keys
+  - `GPG_ZIPPED_KEYS_FILE`: Secret file containing the zipped keys file
   - `GPG_KEY_PASSPHRASE`: String text of your `PASSPHRASE`
   
-  or execute the following script where you will, of course, replace within the file: 
+  or execute the following script where you will, of course, replace within the `create_credentials.groovy file the: 
   - passphrase,
   - gpg_keyid, 
   - github credentials
-  and copy/paste your pub/private keys within the cloned project under the `jenkins` folder
+  The groovy file will import the `gnupg.zip` from the home directory of this project
   
   ```bash
   cat jenkins/create_credentials.groovy | jenkins-cli -s http://localhost:8080 groovy = <PATH_OF_THE_PROJECT>
