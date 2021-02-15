@@ -166,7 +166,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   - `GPG_ZIPPED_KEYS_FILE`: Secret file containing the zipped keys file
   - `GPG_KEY_PASSPHRASE`: String text of your `PASSPHRASE`
   
-  or execute the following script where you will, of course, replace within the `create_credentials.groovy file the: 
+  or execute the following script where you will, of course, replace within the `create_credentials.groovy` file the: 
   - passphrase,
   - gpg_keyid, 
   - github credentials
