@@ -126,13 +126,17 @@ The instructions defined hereafter will help you to :
   gpg --import tmp/pubring.gpg
   echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --allow-secret-key-import --import tmp/secring.gpg
   ```
-- Next edit your key to trust it
+- Next edit your key to trust it (optional)
   ```bash
   gpg --edit-key ${KEYNAME}
   trust
   5
   y 
   quit
+  ```
+- Zip the gnupg files as we will import them for the step where we play with a jenkins job
+  ```bash
+  cd .job_gnupg && zip -r -X "../gnupg.zip" . && cd ..
   ```
 #### Sign the files using the exported keys & mvn gpg:sign
 
@@ -237,8 +241,7 @@ mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
   ```
 - Delete credentials
   ```bash
-  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_SEC_FILE &
-  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_PUB_FILE &
+  jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_ZIPPED_KEYS_FILE &
   jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY &         
   jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GITHUB_CREDENTIALS &
   jenkins-cli -s http://localhost:8080 delete-credentials system::system::jenkins _ GPG_KEY_PASSPHRASE &

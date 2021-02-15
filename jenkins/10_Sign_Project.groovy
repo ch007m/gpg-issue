@@ -21,16 +21,9 @@ pipeline {
         )
         credentials(
                 credentialType: 'com.cloudbees.plugins.credentials.impl.FileCredentialsImpl',
-                defaultValue: 'secring.gpg',
-                description: 'File with the secret GPG key to sign the release files with.',
-                name: 'GPG_KEY_SEC_FILE',
-                required: true
-        )
-        credentials(
-                credentialType: 'com.cloudbees.plugins.credentials.impl.FileCredentialsImpl',
-                defaultValue: 'pubring.gpg',
-                description: 'File with the public GPG key to sign the release files with.',
-                name: 'GPG_KEY_PUB_FILE',
+                defaultValue: 'gnupg.zip',
+                description: 'Zipped file containing the pub and private key files',
+                name: 'GPG_ZIPPED_KEYS_FILE',
                 required: true
         )
         credentials(
@@ -79,20 +72,16 @@ pipeline {
                 GNUPGHOME = "${WORKSPACE}/.gnupg"
             }
             steps {
-                withCredentials([file(credentialsId: '${GPG_KEY_SEC_FILE}',variable: 'GPG_KEY_SEC_FILE_CONTENTS')
-                                 , file(credentialsId: '${GPG_KEY_PUB_FILE}',variable: 'GPG_KEY_PUB_FILE_CONTENTS')
+                withCredentials([file(credentialsId: '${GPG_ZIPPED_KEYS_FILE}',variable: 'GPG_ZIPPED_KEYS_FILE_CONTENTS')
                                  , string(credentialsId: '${GPG_KEY_PPHRASE}',variable: 'GPG_KEY_PPHRASE_CONTENTS')
                 ]) {
                     script {
-                        println("GPG_KEY_SEC_FILE: ${GPG_KEY_SEC_FILE}")
                         println("GPG_KEY: ${GPG_KEY}")
                         println("GPG_KEY_PPHRASE: ${GPG_KEY_PPHRASE}")
-                        println("GPG_KEY_SEC_FILE_CONTENTS: ${GPG_KEY_SEC_FILE_CONTENTS}")
 
                         sh '''
                         mkdir -p ${GNUPGHOME}
-                        cp -f ${GPG_KEY_SEC_FILE_CONTENTS} ${GNUPGHOME}/secring.gpg
-                        cp -f ${GPG_KEY_PUB_FILE_CONTENTS} ${GNUPGHOME}/pubring.gpg
+                        unzip ${GPG_ZIPPED_KEYS_FILE_CONTENTS} -d ${GNUPGHOME}
                         chmod 700 ${GNUPGHOME}
                         '''
                     }
@@ -123,7 +112,7 @@ pipeline {
                     dir('gpg-issue') {
                         sh '''
                         export GPG_PASSPHRASE=$GPG_KEY_PPHRASE_CONTENTS
-                        mvn package gpg:sign -Dgpg.args="--pinentry-mode loopback" -Dgpg.keyname=$GPG_KEY -X
+                        mvn package gpg:sign -Dgpg.keyname=$GPG_KEY -X
                         '''
                     }
                 }

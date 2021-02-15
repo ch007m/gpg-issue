@@ -12,8 +12,6 @@
         <string>GPG_KEY</string>
         <string>GITHUB_CREDENTIALS</string>
         <string>GPG_KEY_PPHRASE</string>
-        <string>GPG_KEY_SEC_FILE</string>
-        <string>GPG_KEY_PUB_FILE</string>
       </parameters>
       <options/>
     </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
@@ -46,25 +44,18 @@
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
-          <name>GPG_KEY_SEC_FILE</name>
-          <description>File with the secret GPG key to sign the release files with.</description>
-          <defaultValue>GPG_KEY_SEC_FILE</defaultValue>
-          <credentialType>org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl</credentialType>
-          <required>true</required>
-        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
-        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
-          <name>GPG_KEY_PUB_FILE</name>
-          <description>File with the public GPG key to sign the release files with.</description>
-          <defaultValue>GPG_KEY_PUB_FILE</defaultValue>
-          <credentialType>org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl</credentialType>
-          <required>true</required>
-        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
-        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
           <name>GPG_KEY_PPHRASE</name>
           <description>Passphrase for the secret GPG key to sign the release files with.</description>
           <defaultValue>GPG_KEY_PASSPHRASE</defaultValue>
-          <credentialType>com.cloudbees.plugins.credentials.common.StandardCredentials</credentialType>
+          <credentialType>com.cloudbees.plugins.credentials.impl.StringCredentialsImpl</credentialType>
           <required>true</required>
+        </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
+        <com.cloudbees.plugins.credentials.CredentialsParameterDefinition plugin="credentials@2.3.14">
+          <name>GPG_ZIPPED_KEYS_FILE</name>
+          <description></description>
+          <defaultValue>GPG_ZIPPED_KEYS_FILE</defaultValue>
+          <credentialType>org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl</credentialType>
+          <required>false</required>
         </com.cloudbees.plugins.credentials.CredentialsParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -90,20 +81,6 @@ pipeline {
                 defaultValue: &apos;4BD5F787F27F97744BC09E019C1CA69653E98E56&apos;,
                 description: &apos;GPG key to sign the release files with.&apos;,
                 name: &apos;GPG_KEY&apos;
-        )
-        credentials(
-                credentialType: &apos;com.cloudbees.plugins.credentials.impl.FileCredentialsImpl&apos;,
-                defaultValue: &apos;secring.gpg&apos;,
-                description: &apos;File with the secret GPG key to sign the release files with.&apos;,
-                name: &apos;GPG_KEY_SEC_FILE&apos;,
-                required: true
-        )
-        credentials(
-                credentialType: &apos;com.cloudbees.plugins.credentials.impl.FileCredentialsImpl&apos;,
-                defaultValue: &apos;pubring.gpg&apos;,
-                description: &apos;File with the public GPG key to sign the release files with.&apos;,
-                name: &apos;GPG_KEY_PUB_FILE&apos;,
-                required: true
         )
         credentials(
                 credentialType: &apos;com.cloudbees.plugins.credentials.impl.StringCredentialsImpl&apos;,
@@ -151,20 +128,16 @@ pipeline {
                 GNUPGHOME = &quot;${WORKSPACE}/.gnupg&quot;
             }
             steps {
-                withCredentials([file(credentialsId: &apos;${GPG_KEY_SEC_FILE}&apos;,variable: &apos;GPG_KEY_SEC_FILE_CONTENTS&apos;)
-                                 , file(credentialsId: &apos;${GPG_KEY_PUB_FILE}&apos;,variable: &apos;GPG_KEY_PUB_FILE_CONTENTS&apos;)
+                withCredentials([file(credentialsId: &apos;${GPG_ZIPPED_KEYS_FILE}&apos;,variable: &apos;GPG_ZIPPED_KEYS_FILE_CONTENTS&apos;)
                                  , string(credentialsId: &apos;${GPG_KEY_PPHRASE}&apos;,variable: &apos;GPG_KEY_PPHRASE_CONTENTS&apos;)
                 ]) {
                     script {
-                        println(&quot;GPG_KEY_SEC_FILE: ${GPG_KEY_SEC_FILE}&quot;)
                         println(&quot;GPG_KEY: ${GPG_KEY}&quot;)
                         println(&quot;GPG_KEY_PPHRASE: ${GPG_KEY_PPHRASE}&quot;)
-                        println(&quot;GPG_KEY_SEC_FILE_CONTENTS: ${GPG_KEY_SEC_FILE_CONTENTS}&quot;)
 
                         sh &apos;&apos;&apos;
                         mkdir -p ${GNUPGHOME}
-                        cp -f ${GPG_KEY_SEC_FILE_CONTENTS} ${GNUPGHOME}/secring.gpg
-                        cp -f ${GPG_KEY_PUB_FILE_CONTENTS} ${GNUPGHOME}/pubring.gpg
+                        unzip ${GPG_ZIPPED_KEYS_FILE_CONTENTS} -d ${GNUPGHOME}
                         chmod 700 ${GNUPGHOME}
                         &apos;&apos;&apos;
                     }
