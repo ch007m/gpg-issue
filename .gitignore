@@ -1,6 +1,7 @@
 tmp/
 .job_gnupg/
 *.gpg
+gnupg.zip
 
 target/
 !.mvn/wrapper/maven-wrapper.jar
