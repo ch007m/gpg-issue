@@ -195,7 +195,7 @@ pipeline {
                     dir(&apos;gpg-issue&apos;) {
                         sh &apos;&apos;&apos;
                         export GPG_PASSPHRASE=$GPG_KEY_PPHRASE_CONTENTS
-                        mvn package gpg:sign -Dgpg.args=&quot;--pinentry-mode loopback&quot; -Dgpg.keyname=$GPG_KEY -X
+                        mvn package gpg:sign -Dgpg.keyname=$GPG_KEY -X
                         &apos;&apos;&apos;
                     }
                 }
