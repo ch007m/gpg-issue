@@ -67,7 +67,7 @@ like also the following link to design properly the jenkins job:
   ```bash
   export GPG_PASSPHRASE="xxxx"
   export KEYNAME=<YOUR KEYID>
-  mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
+  mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -Dgpg.passphrase=${GPG_PASSPHRASE} -X
   ```
 - The `maven gpg plugin` will use the following parameters according to the configuration defined within the pom.xml and passed as ENV var and `gpg.property`
   ```bash
@@ -145,7 +145,7 @@ export GPG_PASSPHRASE="xxxx"
 pkill gpg-agent
 export GNUPGHOME=.job_gnupg
 
-mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -X
+mvn package gpg:sign -Dgpg.keyname=${KEYNAME} -Dgpg.passphrase=${GPG_PASSPHRASE} -X
 ```
 
 #### Sign this project using jenkins job

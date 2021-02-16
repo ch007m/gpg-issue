@@ -111,8 +111,7 @@ pipeline {
                 ]) {
                     dir('gpg-issue') {
                         sh '''
-                        export GPG_PASSPHRASE=$GPG_KEY_PPHRASE_CONTENTS
-                        mvn package gpg:sign -Dgpg.keyname=$GPG_KEY -X
+                        mvn package gpg:sign -Dgpg.keyname=$GPG_KEY -Dgpg.passphrase=$GPG_KEY_PPHRASE_CONTENTS -X
                         '''
                     }
                 }
