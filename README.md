@@ -113,7 +113,7 @@ The instructions defined hereafter will help you to :
   export GPG_PASSPHRASE="xxxx"
   
   rm -rf tmp; mkdir tmp
-  gpg -a --export > tmp/pubring.gpg
+  gpg -a --export --export ${KEYNAME} > tmp/pubring.gpg
   echo ${GPG_PASSPHRASE} | gpg --batch --passphrase-fd 0 --pinentry-mode loopback -a --export-secret-keys ${KEYNAME} > tmp/secring.gpg
   ```
 - Next, import the files into a newly gnupg folder created
